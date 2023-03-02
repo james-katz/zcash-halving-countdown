@@ -1,0 +1,30 @@
+syntax = "proto3";
+package cash.z.wallet.sdk.rpc;
+
+message ChainSpec {}
+message BlockID {
+    uint64 height = 1;
+    bytes hash = 2;
+}
+
+message Empty {}
+
+message Duration {
+    int64 intervalUs = 1;
+}
+
+message LightdInfo {
+    string version = 1;
+    string vendor = 2;
+    bool   taddrSupport = 3;
+    string chainName = 4;
+    uint64 saplingActivationHeight = 5;
+    string consensusBranchId = 6;   // This should really be u32 or []byte, but string for readability
+    uint64 blockHeight = 7;
+}
+
+service CompactTxStreamer {
+    rpc GetLatestBlock(ChainSpec) returns (BlockID) {}
+    // Misc
+    rpc GetLightdInfo(Empty) returns (LightdInfo) {}
+}

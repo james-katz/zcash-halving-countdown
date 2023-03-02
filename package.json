@@ -1,0 +1,15 @@
+{
+  "name": "zcash-halving-countdown",
+  "version": "1.0.0",
+  "description": "A countdown for the next Zcash halving",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Katz",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.11",
+    "@grpc/proto-loader": "^0.7.5"
+  }
+}
