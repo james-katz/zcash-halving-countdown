@@ -31,7 +31,7 @@ function countdown() {
         client.GetLatestBlock(chainSpec, (err, res) => {
             if(err) reject(err);
 
-            const height = res.height;            
+            const height = parseInt(res.height);
             const nextHalving = nextHalvingBlock(height);
             const remainingBlocks = nextHalving - height;
             const secondsToHalving = avgBlockTime * remainingBlocks;
