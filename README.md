@@ -35,3 +35,5 @@ Json format:
   },
   "halving_date":"2024-11-20T06:31:15.237Z" // Estimated date the halving will occur
   }
+
+Enjoy.
