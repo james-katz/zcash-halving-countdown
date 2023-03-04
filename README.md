@@ -26,6 +26,8 @@ Json format:
   "height":"2002247", // Current clockchain height
   "next_halving":2726400, // Next Halving block height
   "remaining_blocks":724153, // Ramaining blocks until next halving
+  "current_subsidy":312500000, // Current block subsidy in zatoshi
+  "next_subsidy":156250000, // Next block subsidy in zatoshi
   "countdown":
   {
     "secs":15, // Remaining seconds until next halving

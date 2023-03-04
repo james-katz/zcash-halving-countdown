@@ -36,6 +36,9 @@ function countdown() {
             const remainingBlocks = nextHalving - height;
             const secondsToHalving = avgBlockTime * remainingBlocks;
             
+            const currSubisidy = calculateBlockSubsidy(height);
+            const nextSubisidy = calculateBlockSubsidy(nextHalving);
+
             const countdownDay = Math.floor(secondsToHalving / (3600*24));
             const countdownHrs = Math.floor(secondsToHalving % (3600*24) / 3600);
             const countdownMin = Math.floor(secondsToHalving % 3600 / 60);
@@ -47,7 +50,9 @@ function countdown() {
             const json = {
                 "height": height,
                 "next_halving": nextHalving,
-                "remaining_blocks": remainingBlocks,                
+                "remaining_blocks": remainingBlocks,
+                "current_subsidy": currSubisidy,
+                "next_subsidy": nextSubisidy,
                 "countdown": {
                     "secs": countdownSec,
                     "mins": countdownMin,
@@ -70,6 +75,28 @@ function nextHalvingBlock(height) {
         next += halvingInterval;
     }
     return next;
+}
+
+function calculateBlockSubsidy(height) {
+    const blossomActivationHeight = 653600;
+    const preBlossomHalvingInterval = 840000;
+    
+    const preBlossomPoWTargetSpacing = 150;
+    const postBlossomPoWTargetSpacing = 75;
+
+    const blossomPoWTargetSpacingRatio = preBlossomPoWTargetSpacing / postBlossomPoWTargetSpacing; 
+    const postBlossomHalvingInterval = Math.floor(preBlossomHalvingInterval * blossomPoWTargetSpacingRatio)
+
+    const slowStartInterval = 20000;
+    const slowStartShift = slowStartInterval / 2;
+    
+    const maxBlockSubsidy = 1250000000;
+
+    const halving = Math.floor(( (blossomActivationHeight - slowStartShift) / preBlossomHalvingInterval ) + ( (height - blossomActivationHeight) / postBlossomHalvingInterval ));
+    
+    const blockSubsidy = Math.floor(maxBlockSubsidy / (blossomPoWTargetSpacingRatio * (2 ** halving)));
+
+    return blockSubsidy;
 }
 
 app.get('/', async (req, res) => {
