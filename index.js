@@ -7,9 +7,25 @@ const express = require('express');
 const app = express();
 const port = 3001;
 
+// Define all the constants
+const blossomActivationHeight = 653600;
+const preBlossomHalvingInterval = 840000;
+
+const preBlossomPoWTargetSpacing = 150;
+const postBlossomPoWTargetSpacing = 75;
+
+const blossomPoWTargetSpacingRatio = preBlossomPoWTargetSpacing / postBlossomPoWTargetSpacing; 
+const postBlossomHalvingInterval = Math.floor(preBlossomHalvingInterval * blossomPoWTargetSpacingRatio)
+
+const slowStartInterval = 20000;
+const slowStartShift = slowStartInterval / 2;
+    
+const maxBlockSubsidy = 1250000000;
 const halvingInterval = 1680000;
+
 const firstHalving = 1046400;
 const avgBlockTime = 75;
+
 const serverUri = 'mainnet.lightwalletd.com:9067';
 
 const packageDefinition = protoLoader.loadSync(
@@ -32,12 +48,14 @@ function countdown() {
             if(err) reject(err);
 
             const height = parseInt(res.height);
-            const nextHalving = nextHalvingBlock(height);
+            const halvingNumber = calculateHalving(height);
+
+            const nextHalving = nextHalvingBlock(halvingNumber);
             const remainingBlocks = nextHalving - height;
             const secondsToHalving = avgBlockTime * remainingBlocks;
             
-            const currSubisidy = calculateBlockSubsidy(height);
-            const nextSubisidy = calculateBlockSubsidy(nextHalving);
+            const currSubisidy = calculateBlockSubsidy(halvingNumber);
+            const nextSubisidy = calculateBlockSubsidy(halvingNumber + 1);
 
             const countdownDay = Math.floor(secondsToHalving / (3600*24));
             const countdownHrs = Math.floor(secondsToHalving % (3600*24) / 3600);
@@ -68,32 +86,17 @@ function countdown() {
     });    
 }
 
-function nextHalvingBlock(height) {    
-    let next = firstHalving;
-    
-    while(next <= height) {
-        next += halvingInterval;
-    }
-    return next;
+function nextHalvingBlock(halving) {    
+    return firstHalving + (halvingInterval * halving);
 }
 
-function calculateBlockSubsidy(height) {
-    const blossomActivationHeight = 653600;
-    const preBlossomHalvingInterval = 840000;
-    
-    const preBlossomPoWTargetSpacing = 150;
-    const postBlossomPoWTargetSpacing = 75;
-
-    const blossomPoWTargetSpacingRatio = preBlossomPoWTargetSpacing / postBlossomPoWTargetSpacing; 
-    const postBlossomHalvingInterval = Math.floor(preBlossomHalvingInterval * blossomPoWTargetSpacingRatio)
-
-    const slowStartInterval = 20000;
-    const slowStartShift = slowStartInterval / 2;
-    
-    const maxBlockSubsidy = 1250000000;
-
+function calculateHalving(height) {    
     const halving = Math.floor(( (blossomActivationHeight - slowStartShift) / preBlossomHalvingInterval ) + ( (height - blossomActivationHeight) / postBlossomHalvingInterval ));
     
+    return halving;
+}
+
+function calculateBlockSubsidy(halving) {
     const blockSubsidy = Math.floor(maxBlockSubsidy / (blossomPoWTargetSpacingRatio * (2 ** halving)));
 
     return blockSubsidy;
