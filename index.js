@@ -26,7 +26,7 @@ const halvingInterval = 1680000;
 const firstHalving = 1046400;
 const avgBlockTime = 75;
 
-const serverUri = 'mainnet.lightwalletd.com:9067';
+const serverUri = 'zec.rocks:443';
 
 const packageDefinition = protoLoader.loadSync(
     PROTO_PATH,
